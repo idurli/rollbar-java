@@ -1,5 +1,7 @@
 package com.muantech.rollbar.java;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -87,13 +89,14 @@ public class HttpRequest {
 
     private void writeBody(byte[] body, HttpURLConnection connection) throws IOException {
         OutputStream out = null;
+
         try {
-            out = new BufferedOutputStream(connection.getOutputStream());
+            OutputStream stream = connection.getOutputStream();
+            out = new BufferedOutputStream(stream);
             out.write(this.body);
         } finally {
             if (out != null) out.close();
         }
-
     }
 
     public int getAttemptNumber() {

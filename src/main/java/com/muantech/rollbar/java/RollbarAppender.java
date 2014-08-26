@@ -25,11 +25,13 @@ public class RollbarAppender extends AppenderSkeleton {
     private boolean onlyThrowable = true;
     private boolean logs = true;
 
-    private Level notifyLevel = Level.ERROR;
+    private Level threshold = Level.ERROR;
 
     private String apiKey;
     private String env;
     private String url = "https://api.rollbar.com/api/1/item/";
+    private String proxyHost;
+    private String proxyPort;
 
     @Override
     protected void append(final LoggingEvent event) {
@@ -37,28 +39,29 @@ public class RollbarAppender extends AppenderSkeleton {
 
         try {
 
+            MDC.put("Telephony-BridgeAppSrvr","");
+
             // add to the LOG_BUFFER buffer
             LOG_BUFFER.add(this.layout.format(event).trim());
 
             if (!hasToNotify(event.getLevel())) return;
 
             boolean hasThrowable = thereIsThrowableIn(event);
-            if (onlyThrowable && !hasThrowable) return;
+            //if (onlyThrowable && !hasThrowable) return;
 
             initNotifierIfNeeded();
 
             final Map<String, Object> context = getContext(event);
 
             if (hasThrowable) {
-                RollbarNotifier.notify((String) event.getMessage(), getThrowable(event), context);
+                RollbarNotifier.notify(event.getMessage().toString(), getThrowable(event), context);
             } else {
-                RollbarNotifier.notify((String) event.getMessage(), context);
+                RollbarNotifier.notify(event.getMessage().toString(), context);
             }
 
         } catch (Exception e) {
             LogLog.error("Error sending error notification! error=" + e.getClass().getName() + " with message=" + e.getMessage());
         }
-
     }
 
     private Map<String, Object> getContext(final LoggingEvent event) {
@@ -71,12 +74,14 @@ public class RollbarAppender extends AppenderSkeleton {
     }
 
     public boolean hasToNotify(Priority priority) {
-        return priority.isGreaterOrEqual(notifyLevel);
+        return super.isAsSevereAsThreshold(priority);
+        //return priority.isGreaterOrEqual(threshold);
     }
 
     private synchronized void initNotifierIfNeeded() throws JSONException, UnknownHostException {
         if (init) return;
         RollbarNotifier.init(url, apiKey, env);
+        setProxy();
         init = true;
     }
 
@@ -105,11 +110,11 @@ public class RollbarAppender extends AppenderSkeleton {
     }
 
     public Level getNotifyLevel() {
-        return notifyLevel;
+        return threshold;
     }
 
     public void setLevel(String notifyLevel) {
-        this.notifyLevel = Level.toLevel(notifyLevel);
+        this.threshold = Level.toLevel(notifyLevel);
     }
 
     public boolean isLogs() {
@@ -122,6 +127,22 @@ public class RollbarAppender extends AppenderSkeleton {
 
     public void setLimit(int limit) {
         RollbarAppender.LOG_BUFFER = new LimitedQueue<String>(limit);
+    }
+
+    public String getProxyHost() {
+        return proxyHost;
+    }
+
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
+    }
+
+    public String getProxyPort() {
+        return proxyPort;
+    }
+
+    public void setProxyPort(String proxyPort) {
+        this.proxyPort = proxyPort;
     }
 
     private boolean thereIsThrowableIn(LoggingEvent loggingEvent) {
@@ -170,4 +191,10 @@ public class RollbarAppender extends AppenderSkeleton {
         }
     }
 
+    private void setProxy() {
+        if (this.proxyHost != null && this.proxyPort != null) {
+            System.setProperty("https.proxyHost", this.getProxyHost());
+            System.setProperty("https.proxyPort", this.getProxyPort());
+        }
+    }
 }

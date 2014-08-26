@@ -104,8 +104,8 @@ public class RollbarNotifier {
         request.setRequestProperty("Content-Type", "application/json");
         request.setRequestProperty("Accept", "application/json");
         request.setBody(json.toString());
-
         boolean success = request.execute();
+
         if (!success && request.getAttemptNumber() < MAX_RETRIES) {
             retryRequest(request);
         }
@@ -125,10 +125,8 @@ public class RollbarNotifier {
         try {
             url = new URL(urlString);
         } catch (MalformedURLException e) {
-            LogLog.error("Error parsing the notifiying URL", e);
             throw new IllegalArgumentException();
         }
         return url;
     }
-
 }

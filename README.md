@@ -40,7 +40,7 @@ Example:
 
 or in XML format:
 
-	<appender name="ROLLBAR" class="com.muantech.rollbar.java.RollbarAppender">
+	<appender name="ROLLBAR" class="RollbarAppender">
 	    <param name="enabled" value="false"/>
 	    <param name="api_key" value="YOUR_ROLLBAR_API_KEY"/> 
 	    <param name="env" value="test"/>
@@ -155,7 +155,7 @@ License
 <pre>
 This software is licensed under the Apache 2 license, quoted below.
 
-Copyright 2014 Rafael Muñoz Vega
+Copyright 2014 Rafael Muï¿½oz Vega
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of
