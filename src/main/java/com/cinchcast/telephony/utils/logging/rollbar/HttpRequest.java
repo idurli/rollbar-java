@@ -1,6 +1,5 @@
-package com.muantech.rollbar.java;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
+//package com.muantech.rollbar.java;
+package com.cinchcast.telephony.utils.logging.rollbar;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -94,7 +93,8 @@ public class HttpRequest {
             OutputStream stream = connection.getOutputStream();
             out = new BufferedOutputStream(stream);
             out.write(this.body);
-        } finally {
+        }
+        finally {
             if (out != null) out.close();
         }
     }

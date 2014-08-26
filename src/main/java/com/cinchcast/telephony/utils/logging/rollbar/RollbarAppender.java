@@ -1,6 +1,9 @@
-package com.muantech.rollbar.java;
+package com.cinchcast.telephony.utils.logging.rollbar;
+//package com.muantech.rollbar.java;
 
 import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
@@ -13,6 +16,8 @@ import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 import org.json.JSONException;
+
+import javax.net.ssl.*;
 
 public class RollbarAppender extends AppenderSkeleton {
 
@@ -81,6 +86,7 @@ public class RollbarAppender extends AppenderSkeleton {
     private synchronized void initNotifierIfNeeded() throws JSONException, UnknownHostException {
         if (init) return;
         RollbarNotifier.init(url, apiKey, env);
+        createTrustManager();
         setProxy();
         init = true;
     }
@@ -193,8 +199,44 @@ public class RollbarAppender extends AppenderSkeleton {
 
     private void setProxy() {
         if (this.proxyHost != null && this.proxyPort != null) {
+            System.setProperty("http.proxyHost", this.getProxyHost());
+            System.setProperty("http.proxyPort", this.getProxyPort());
             System.setProperty("https.proxyHost", this.getProxyHost());
             System.setProperty("https.proxyPort", this.getProxyPort());
+        }
+    }
+
+    private void createTrustManager() {
+        try {
+            // Create a trust manager that does not validate certificate chains
+            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+            }};
+
+            // Install the all-trusting trust manager
+            final SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Create all-trusting host name verifier
+            HostnameVerifier allHostsValid = new HostnameVerifier() {
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            };
+
+            // Install the all-trusting host verifier
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        } catch (Exception e) {
+            LogLog.error("Exception creating trust manager.", e);
         }
     }
 }
