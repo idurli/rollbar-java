@@ -223,3 +223,6 @@ pip-log.txt
 /.idea/scopes
 /.idea/copyright
 /.idea/workspace.xml
+/src/main/resources
+/.idea
+/rollbar-java.iml

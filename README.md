@@ -33,10 +33,14 @@ Example:
 	log4j.appender.rollbar.env=test
 	log4j.appender.rollbar.enabled=true
 	log4j.appender.rollbar.onlyThrowable=true
-	log4j.appender.rollbar.notifyLevel=error
+	log4j.appender.rollbar.threshold=DEBUG
 	log4j.appender.rollbar.logs=true
 	log4j.appender.rollbar.limit=1000
 	#log4j.appender.rollbar.url=https://api.rollbar.com/api/1/item/
+	log4j.appender.rollbar.proxyHost=example-proxy-01.domain.com
+    log4j.appender.rollbar.proxyPort=3128
+    log4j.appender.rollbar.avoidCertificate=true
+    log4j.appender.rollbar.context=ApplicationContext
 
 or in XML format:
 
@@ -63,10 +67,15 @@ Appender parameters:
 * env: Environment. i.e. production, test, development. Mandatory.
 * enabled: Enable the notifications. Default: true
 * onlyThrowable: Only notify throwables skipping messages. Default: true
-* notifyLevel: Only notify if the log4j level is equal or greater of this value. Default: error
+* threshold: Only notify if the log4j level is equal or greater of this value. Default: error
 * logs: Send the last log lines attached to the notification. The log lines would be formatted with the configured layout. Default: true
 * limit: The number of log lines to send attached to the notification. Default: 1000
 * url: The Rollbar API url. Default: https://api.rollbar.com/api/1/item/
+* proxyHost: The proxy's URL for posting notifications. If not provided, no action is taken.
+* proxyPort: The proxy's port for posting notifications.
+* avoidCertificate: An option for avoiding SSL certificates. 
+* context: A context provided, since contexts are added in servelt requests.
+
 
 It's important to distinguish between:
 - The usual Log4j level: Log lines with level equal or greater than the Log4j level will be added to the logs buffer to be attached to the notifications and only notified if fulfill additional criteria (onlyThrowable and notifyLevel).
