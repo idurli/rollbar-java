@@ -51,7 +51,7 @@ public class RollbarAppender extends AppenderSkeleton {
             if (!hasToNotify(event.getLevel())) return;
 
             boolean hasThrowable = thereIsThrowableIn(event);
-            
+
             initNotifierIfNeeded();
 
             final Map<String, Object> context = getContext(event);

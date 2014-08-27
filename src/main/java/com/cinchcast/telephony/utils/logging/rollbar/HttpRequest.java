@@ -90,11 +90,9 @@ public class HttpRequest {
         OutputStream out = null;
 
         try {
-            OutputStream stream = connection.getOutputStream();
-            out = new BufferedOutputStream(stream);
+            out = new BufferedOutputStream(connection.getOutputStream());
             out.write(this.body);
-        }
-        finally {
+        } finally {
             if (out != null) out.close();
         }
     }
