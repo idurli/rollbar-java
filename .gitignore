@@ -214,3 +214,11 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 /target
+/.idea/uiDesigner.xml
+/.idea/vcs.xml
+/.idea/.name
+/.idea/compiler.xml
+/.idea/encodings.xml
+/.idea/modules.xml
+/.idea/scopes
+/.idea/copyright
