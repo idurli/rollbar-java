@@ -1,4 +1,4 @@
-package com.cinchcast.telephony.utils.logging.rollbar.test;
+package com.muantech.rollbar.java.test;
 
 import org.apache.log4j.Logger;
 

@@ -1,5 +1,4 @@
-package com.cinchcast.telephony.utils.logging.rollbar;
-//package com.muantech.rollbar.java;
+package com.muantech.rollbar.java;
 
 import java.net.UnknownHostException;
 import java.security.cert.X509Certificate;

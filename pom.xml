@@ -17,7 +17,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.cinchcast.telephony.utils.logging.rollbar.test.App</mainClass>
+                            <mainClass>com.muantech.rollbar.java.test.App</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
