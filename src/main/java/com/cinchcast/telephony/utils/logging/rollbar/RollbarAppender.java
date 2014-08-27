@@ -2,7 +2,6 @@ package com.cinchcast.telephony.utils.logging.rollbar;
 //package com.muantech.rollbar.java;
 
 import java.net.UnknownHostException;
-import java.security.KeyManagementException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -37,6 +36,8 @@ public class RollbarAppender extends AppenderSkeleton {
     private String url = "https://api.rollbar.com/api/1/item/";
     private String proxyHost;
     private String proxyPort;
+    private String context;
+    private boolean avoidCertificate;
 
     @Override
     protected void append(final LoggingEvent event) {
@@ -44,16 +45,13 @@ public class RollbarAppender extends AppenderSkeleton {
 
         try {
 
-            MDC.put("Telephony-BridgeAppSrvr","");
-
             // add to the LOG_BUFFER buffer
             LOG_BUFFER.add(this.layout.format(event).trim());
 
             if (!hasToNotify(event.getLevel())) return;
 
             boolean hasThrowable = thereIsThrowableIn(event);
-            //if (onlyThrowable && !hasThrowable) return;
-
+            
             initNotifierIfNeeded();
 
             final Map<String, Object> context = getContext(event);
@@ -80,13 +78,17 @@ public class RollbarAppender extends AppenderSkeleton {
 
     public boolean hasToNotify(Priority priority) {
         return super.isAsSevereAsThreshold(priority);
-        //return priority.isGreaterOrEqual(threshold);
     }
 
     private synchronized void initNotifierIfNeeded() throws JSONException, UnknownHostException {
         if (init) return;
         RollbarNotifier.init(url, apiKey, env);
-        createTrustManager();
+        setDefaultContext();
+
+        if(isAvoidCertificate()) {
+            createTrustManager();
+        }
+
         setProxy();
         init = true;
     }
@@ -149,6 +151,22 @@ public class RollbarAppender extends AppenderSkeleton {
 
     public void setProxyPort(String proxyPort) {
         this.proxyPort = proxyPort;
+    }
+
+    public String getContext() {
+        return context;
+    }
+
+    public void setContext(String context) {
+        this.context = context;
+    }
+
+    public boolean isAvoidCertificate() {
+        return avoidCertificate;
+    }
+
+    public void setAvoidCertificate(boolean avoidCertificate) {
+        this.avoidCertificate = avoidCertificate;
     }
 
     private boolean thereIsThrowableIn(LoggingEvent loggingEvent) {
@@ -237,6 +255,14 @@ public class RollbarAppender extends AppenderSkeleton {
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
         } catch (Exception e) {
             LogLog.error("Exception creating trust manager.", e);
+        }
+    }
+
+    private void setDefaultContext() {
+        if(this.getContext() == null) {
+            MDC.put("DefaultContext", "");
+        } else {
+            MDC.put(this.getContext(), "");
         }
     }
 }

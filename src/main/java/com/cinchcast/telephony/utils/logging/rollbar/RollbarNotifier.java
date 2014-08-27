@@ -126,6 +126,7 @@ public class RollbarNotifier {
         try {
             url = new URL(urlString);
         } catch (MalformedURLException e) {
+            LogLog.error("Error parsing the notifiying URL", e);
             throw new IllegalArgumentException();
         }
         return url;
