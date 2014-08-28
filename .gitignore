@@ -226,3 +226,4 @@ pip-log.txt
 /src/main/resources
 /.idea
 /rollbar-java.iml
+/pom.xml

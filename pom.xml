@@ -4,7 +4,7 @@
   <groupId>rollbar-java</groupId>
     <artifactId>rollbar-java</artifactId>
     <packaging>jar</packaging>
-    <version>0.2</version>
+    <version>0.2-SNAPSHOT</version>
     <build>
         <plugins>
             <plugin>
